@@ -19,11 +19,11 @@ Games::Word - utility functions for writing word games
 
 =head1 VERSION
 
-Version 0.03 released 12/17/08
+Version 0.04 released 12/18/08
 
 =cut
 
-our $VERSION = '0.03';
+our $VERSION = '0.04';
 
 =head1 SYNOPSIS
 
@@ -196,8 +196,9 @@ sub is_substring {
     my ($substring, $string) = @_;
 
     return 1 if $substring eq '';
+    return 0 if $string eq '';
     my $re = join('?', map { quotemeta } split(//, $string)) . '?';
-    return $substring =~ $re;
+    return $substring =~ /^$re$/;
 }
 
 =item all_substrings STRING
