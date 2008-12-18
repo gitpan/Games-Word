@@ -2,6 +2,7 @@ bin/cryptogram.pl
 bin/jotto.pl
 bin/mastermind.pl
 bin/solve-ghost.pl
+bin/solve-spook.pl
 bin/solve-superghost.pl
 bin/solve-xghost.pl
 Changes
@@ -39,5 +40,3 @@ t/022-random-word-nocache.t
 t/023-is-word-nocache.t
 t/024-anagrams.t
 t/025-subwords.t
-t/026-each-word.t
-t/027-each-word-nocache.t

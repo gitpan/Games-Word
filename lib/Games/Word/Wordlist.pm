@@ -11,11 +11,11 @@ Games::Word::Wordlist - manages a list of words
 
 =head1 VERSION
 
-Version 0.02 released 02/04/2008
+Version 0.03 released 12/17/2008
 
 =cut
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 =head1 SYNOPSIS
 
@@ -336,7 +336,7 @@ L<Games::Word>
 
 =head1 AUTHOR
 
-Jesse Luehrs, C<< <jluehrs2 at uiuc.edu> >>
+Jesse Luehrs, C<< <doy at tozt dot net> >>
 
 =head1 BUGS
 
