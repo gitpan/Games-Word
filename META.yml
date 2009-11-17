@@ -1,27 +1,16 @@
 ---
 abstract: 'utility functions for writing word games'
 author:
-  - 'Jesse Luehrs, C<< <doy at tozt dot net> >>'
-build_requires:
-  List::Util: 0
-  Test::Deep: 0
-  Test::Exception: 0
-  Test::More: 0
-distribution_type: module
-generated_by: 'Module::Install version 0.77'
+  - 'Jesse Luehrs <doy at tozt dot net>'
+generated_by: 'Dist::Zilla version 1.093000'
 license: perl
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
   version: 1.4
 name: Games-Word
-no_index:
-  directory:
-    - inc
-    - t
 requires:
   List::MoreUtils: 0
   Math::Combinatorics: 0
-  Test::Deep::NoTest: 0
-resources:
-  license: http://dev.perl.org/licenses/
-version: 0.04
+  Test::Deep: 0
+  Test::Exception: 0
+version: 0.05

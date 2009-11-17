@@ -1,5 +1,7 @@
-#!perl
 package Games::Word::Wordlist;
+our $VERSION = '0.05';
+
+
 use strict;
 use warnings;
 use Games::Word qw/is_permutation all_permutations is_subpermutation/;
@@ -11,11 +13,7 @@ Games::Word::Wordlist - manages a list of words
 
 =head1 VERSION
 
-Version 0.04 released 12/18/2008
-
-=cut
-
-our $VERSION = '0.04';
+version 0.05
 
 =head1 SYNOPSIS
 
@@ -376,7 +374,7 @@ L<http://search.cpan.org/dist/Games-Word>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2008 Jesse Luehrs.
+Copyright 2008-2009 Jesse Luehrs.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
@@ -384,4 +382,3 @@ under the same terms as Perl itself.
 =cut
 
 1;
-

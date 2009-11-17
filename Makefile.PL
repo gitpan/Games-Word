@@ -1,19 +1,23 @@
-# Load the Module::Install bundled in ./inc/
-use inc::Module::Install;
 
-# Define metadata
-name           'Games-Word';
-all_from       'lib/Games/Word.pm';
+use strict;
+use warnings;
 
-requires       'Math::Combinatorics';
-requires       'Test::Deep::NoTest';
-requires       'List::MoreUtils';
+use ExtUtils::MakeMaker;
 
-build_requires 'Test::More';
-build_requires 'Test::Exception';
-build_requires 'Test::Deep';
-build_requires 'List::Util';
-
-auto_install;
-WriteAll;
+WriteMakefile(
+  DISTNAME  => 'Games-Word',
+  NAME      => 'Games::Word',
+  AUTHOR    => "Jesse\ Luehrs\ \<doy\ at\ tozt\ dot\ net\>",
+  ABSTRACT  => "utility\ functions\ for\ writing\ word\ games",
+  VERSION   => '0.05',
+  EXE_FILES => [ qw(bin/solve-spook.pl bin/solve-xghost.pl bin/solve-superghost.pl bin/jotto.pl bin/solve-ghost.pl bin/mastermind.pl bin/cryptogram.pl) ],
+  (eval { ExtUtils::MakeMaker->VERSION(6.31) } ? (LICENSE => 'perl') : ()),
+  PREREQ_PM    => {
+    "Test::Exception" => '0',
+    "List::MoreUtils" => '0',
+    "Test::Deep" => '0',
+    "Math::Combinatorics" => '0',
+  },
+  test => {TESTS => 't/*.t'}
+);
 
