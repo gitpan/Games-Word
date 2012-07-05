@@ -1,63 +1,17 @@
 package Games::Word::Wordlist;
-our $VERSION = '0.05';
-
-
+BEGIN {
+  $Games::Word::Wordlist::AUTHORITY = 'cpan:DOY';
+}
+{
+  $Games::Word::Wordlist::VERSION = '0.06';
+}
 use strict;
 use warnings;
-use Games::Word qw/is_permutation all_permutations is_subpermutation/;
+use Games::Word qw/all_permutations all_subpermutations/;
 use List::MoreUtils qw/uniq/;
+# ABSTRACT: manages a list of words
 
-=head1 NAME
 
-Games::Word::Wordlist - manages a list of words
-
-=head1 VERSION
-
-version 0.05
-
-=head1 SYNOPSIS
-
-    use Games::Word::Wordlist;
-    my $wl = Games::Word::Wordlist->new('/usr/share/dict/words');
-    my $word = $wl->random_word;
-    print "we have a word" if $wl->is_word($word);
-
-=head1 DESCRIPTION
-
-Games::Word::Wordlist manages a list of words, either from a wordlist file on
-your computer or from a list of words you specify. You can use it to query
-things about the list, such as whether a given string is a word, or how many
-words are in the list, and you can also get words from the list, either
-randomly or by regex.
-
-=cut
-
-=head1 CONSTRUCTOR
-
-=over 4
-
-=item new <FILENAME|ARRAYREF> PARAMHASH
-
-The constructor initializes the word list with words, either from a file or
-from an arrayref, given as the first argument. The remaining arguments are a
-paramhash which recognizes these options:
-
-=over 4
-
-=item cache
-
-Whether or not we want to keep an in memory cache of the words in the word
-list. Defaults to true, since this is what we want in almost all cases, as it
-speeds up lookups by several orders of magnitude. Can be set to false if either
-memory is a significant issue (word lists can be several megabytes in size) or
-if the word list is expected to change frequently during the running of the
-program.
-
-=back
-
-=back
-
-=cut
 
 sub new {
     my $class = shift;
@@ -80,8 +34,8 @@ sub new {
     else {
         die "Can't read word list: $word_list" unless -r $word_list;
         if ($self->{cache} && -s $word_list) {
-            open my $fh, $word_list or die "Opening $word_list failed";
-            for (<$fh>) {
+            open my $fh, '<', $word_list or die "Opening $word_list failed";
+            while (<$fh>) {
                 chomp;
                 $self->{word_hash}{$_} = 1;
             }
@@ -93,18 +47,6 @@ sub new {
     return $self;
 }
 
-=head1 METHODS
-
-=over 4
-
-=item add_words <FILENAME|ARRAYREF>
-
-Add words to the word list. Only works if the word list has been cached.
-
-Takes either a reference to an array containing the new words, or the name of a
-file to read in the words from. Ignores any words already in the word list.
-
-=cut
 
 sub add_words {
     my $self = shift;
@@ -124,11 +66,6 @@ sub add_words {
     return;
 }
 
-=item remove_words LIST
-
-Removes words in LIST from the word list. Only works if the word list is cached.
-
-=cut
 
 sub remove_words {
     my $self = shift;
@@ -141,18 +78,13 @@ sub remove_words {
     return;
 }
 
-=item words
-
-Returns the number of words in the word list.
-
-=cut
 
 sub words {
     my $self = shift;
 
     return @{$self->{word_list}} if $self->{cache};
     open my $fh, '<', $self->{file} or die "Opening $self->{file} failed";
-    for (<$fh>) {}
+    while (<$fh>) {}
 
     return $.;
 }
@@ -193,11 +125,6 @@ sub _random_word_nocache {
     return $word;
 }
 
-=item random_word [LENGTH]
-
-Returns a random word from the word list, optionally of length LENGTH.
-
-=cut
 
 sub random_word {
     my $self = shift;
@@ -226,11 +153,6 @@ sub _is_word_nocache {
     return 0;
 }
 
-=item is_word STRING
-
-Returns true if STRING is found in the word list, and false otherwise.
-
-=cut
 
 sub is_word {
     my $self = shift;
@@ -261,12 +183,6 @@ sub _each_word_nocache {
     return;
 }
 
-=item each_word CODE
-
-Call CODE for each word in the word list. The current word will be passed into
-CODE as its only argument.
-
-=cut
 
 sub each_word {
     my $self = shift;
@@ -275,28 +191,14 @@ sub each_word {
     return $self->_each_word_nocache(@_);
 }
 
-=item anagrams STRING
-
-Returns a list of all permutations of STRING that are found in the word list.
-
-=cut
 
 sub anagrams {
     my $self = shift;
     my $word = shift;
 
-    my @words = ();
-    $self->each_word(sub { push @words, $_[0]
-                                if is_permutation($word, $_[0]) });
-
-    return @words;
+    return grep {$self->is_word($_)} all_permutations($word);
 }
 
-=item words_like REGEX
-
-Returns a list containing all words in the word list which match REGEX.
-
-=cut
 
 sub words_like {
     my $self = shift;
@@ -308,25 +210,104 @@ sub words_like {
     return @words;
 }
 
-=item subwords_of STRING
-
-Returns a list of words from the word list which can be made using the letters
-in STRING.
-
-=cut
 
 sub subwords_of {
     my $self = shift;
     my $string = shift;
 
-    my @words = ();
-    $self->each_word(sub { push @words, $_[0]
-                                if is_subpermutation($_[0], $string)});
-
-    return @words;
+    return grep {$self->is_word($_)} all_subpermutations($string);
 }
 
+
+1;
+
+__END__
+=pod
+
+=head1 NAME
+
+Games::Word::Wordlist - manages a list of words
+
+=head1 VERSION
+
+version 0.06
+
+=head1 SYNOPSIS
+
+    use Games::Word::Wordlist;
+    my $wl = Games::Word::Wordlist->new('/usr/share/dict/words');
+    my $word = $wl->random_word;
+    print "we have a word" if $wl->is_word($word);
+
+=head1 DESCRIPTION
+
+Games::Word::Wordlist manages a list of words, either from a wordlist file on
+your computer or from a list of words you specify. You can use it to query
+things about the list, such as whether a given string is a word, or how many
+words are in the list, and you can also get words from the list, either
+randomly or by regex.
+
+=head1 METHODS
+
+=head2 new <FILENAME|ARRAYREF> PARAMHASH
+
+The constructor initializes the word list with words, either from a file or
+from an arrayref, given as the first argument. The remaining arguments are a
+paramhash which recognizes these options:
+
+=over 4
+
+=item cache
+
+Whether or not we want to keep an in memory cache of the words in the word
+list. Defaults to true, since this is what we want in almost all cases, as it
+speeds up lookups by several orders of magnitude. Can be set to false if either
+memory is a significant issue (word lists can be several megabytes in size) or
+if the word list is expected to change frequently during the running of the
+program.
+
 =back
+
+=head2 add_words <FILENAME|ARRAYREF>
+
+Add words to the word list. Only works if the word list has been cached.
+
+Takes either a reference to an array containing the new words, or the name of a
+file to read in the words from. Ignores any words already in the word list.
+
+=head2 remove_words LIST
+
+Removes words in LIST from the word list. Only works if the word list is cached.
+
+=head2 words
+
+Returns the number of words in the word list.
+
+=head2 random_word [LENGTH]
+
+Returns a random word from the word list, optionally of length LENGTH.
+
+=head2 is_word STRING
+
+Returns true if STRING is found in the word list, and false otherwise.
+
+=head2 each_word CODE
+
+Call CODE for each word in the word list. The current word will be passed into
+CODE as its only argument.
+
+=head2 anagrams STRING
+
+Returns a list of all permutations of STRING that are found in the word list.
+
+=head2 words_like REGEX
+
+Returns a list containing all words in the word list which match REGEX.
+
+=head2 subwords_of STRING
+
+Returns a list of words from the word list which can be made using the letters
+in STRING.
 
 =head1 SEE ALSO
 
@@ -334,51 +315,14 @@ L<Games::Word>
 
 =head1 AUTHOR
 
-Jesse Luehrs, C<< <doy at tozt dot net> >>
-
-=head1 BUGS
-
-No known bugs.
-
-Please report any bugs through RT: email
-C<bug-games-word at rt.cpan.org>, or browse
-L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Games-Word>.
-
-=head1 SUPPORT
-
-You can find this documentation for this module with the perldoc command.
-
-    perldoc Games::Word::Wordlist
-
-You can also look for information at:
-
-=over 4
-
-=item * AnnoCPAN: Annotated CPAN documentation
-
-L<http://annocpan.org/dist/Games-Word>
-
-=item * CPAN Ratings
-
-L<http://cpanratings.perl.org/d/Games-Word>
-
-=item * RT: CPAN's request tracker
-
-L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=Games-Word>
-
-=item * Search CPAN
-
-L<http://search.cpan.org/dist/Games-Word>
-
-=back
+Jesse Luehrs <doy at tozt dot net>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2008-2009 Jesse Luehrs.
+This software is copyright (c) 2012 by Jesse Luehrs.
 
-This program is free software; you can redistribute it and/or modify it
-under the same terms as Perl itself.
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
 
 =cut
 
-1;
